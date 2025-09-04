@@ -2,10 +2,10 @@
 
 import type React from "react"
 
-import { createContext, useContext, useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
-import type { User } from "@supabase/supabase-js"
 import type { Profile } from "@/lib/types"
+import type { User } from "@supabase/supabase-js"
+import { createContext, useContext, useEffect, useState } from "react"
 
 interface AuthContextType {
   user: User | null

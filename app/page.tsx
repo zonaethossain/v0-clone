@@ -1,21 +1,21 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { useAuth } from "@/components/auth-provider"
-import { V0LikeSidebar } from "@/components/v0-like-sidebar"
-import { V0LikeChat } from "@/components/v0-like-chat"
-import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { LogOut, Settings, User, Sparkles, Github, HelpCircle, Bell } from "lucide-react"
-import type { Project, ChatThread } from "@/lib/types"
+import { V0LikeChat } from "@/components/v0-like-chat"
+import { V0LikeSidebar } from "@/components/v0-like-sidebar"
+import type { ChatThread, Project } from "@/lib/types"
+import { Bell, Github, HelpCircle, LogOut, Settings, Sparkles, User } from "lucide-react"
 import { redirect } from "next/navigation"
+import { useEffect, useState } from "react"
 
 export default function HomePage() {
   const { user, profile, loading, signOut } = useAuth()

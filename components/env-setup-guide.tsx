@@ -1,15 +1,21 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Copy, ExternalLink, Key, Database } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import { Copy, Database, ExternalLink, Key } from "lucide-react";
 
 export function EnvSetupGuide() {
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-  }
+    navigator.clipboard.writeText(text);
+  };
 
   const envVariables = [
     {
@@ -33,19 +39,22 @@ export function EnvSetupGuide() {
       icon: <Key className="h-4 w-4" />,
       required: true,
     },
-  ]
+  ];
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold">Environment Setup</h1>
-        <p className="text-muted-foreground">Configure your environment variables to get started</p>
+        <p className="text-muted-foreground">
+          Configure your environment variables to get started
+        </p>
       </div>
 
       <Alert>
         <Key className="h-4 w-4" />
         <AlertDescription>
-          Add these environment variables to your <code>.env.local</code> file in your project root directory.
+          Add these environment variables to your <code>.env.local</code> file
+          in your project root directory.
         </AlertDescription>
       </Alert>
 
@@ -65,7 +74,11 @@ export function EnvSetupGuide() {
                 <span className="flex-1">
                   {env.name}={env.example}
                 </span>
-                <Button size="sm" variant="ghost" onClick={() => copyToClipboard(`${env.name}=${env.example}`)}>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => copyToClipboard(`${env.name}=${env.example}`)}
+                >
                   <Copy className="h-4 w-4" />
                 </Button>
               </div>
@@ -91,7 +104,11 @@ export function EnvSetupGuide() {
               <li>Enable GitHub OAuth in Authentication → Providers</li>
             </ol>
             <Button variant="outline" className="w-full bg-transparent" asChild>
-              <a href="https://supabase.com" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://supabase.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <ExternalLink className="h-4 w-4 mr-2" />
                 Open Supabase
               </a>
@@ -115,7 +132,11 @@ export function EnvSetupGuide() {
               <li>Add billing information if needed</li>
             </ol>
             <Button variant="outline" className="w-full bg-transparent" asChild>
-              <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://platform.openai.com/api-keys"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <ExternalLink className="h-4 w-4 mr-2" />
                 Get OpenAI API Key
               </a>
@@ -157,5 +178,5 @@ OPENAI_API_KEY=sk-proj-your-openai-api-key-here`)
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
