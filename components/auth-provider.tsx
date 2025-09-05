@@ -12,6 +12,7 @@ interface AuthContextType {
   profile: Profile | null
   loading: boolean
   signOut: () => Promise<void>
+  refreshProfile: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -23,20 +24,56 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const supabase = createClient()
 
-  useEffect(() => {
-    const getSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-      setUser(session?.user ?? null)
+  const fetchProfile = async (userId: string) => {
+    try {
+      const { data: profile, error } = await supabase.from("profiles").select("*").eq("id", userId).single()
 
-      if (session?.user) {
-        const { data: profile } = await supabase.from("profiles").select("*").eq("id", session.user.id).single()
-
-        setProfile(profile)
+      if (error && error.code !== "PGRST116") {
+        // PGRST116 = no rows returned
+        console.error("Error fetching profile:", error)
+        return null
       }
 
-      setLoading(false)
+      return profile
+    } catch (error) {
+      console.error("Error in fetchProfile:", error)
+      return null
+    }
+  }
+
+  const refreshProfile = async () => {
+    if (user) {
+      const profile = await fetchProfile(user.id)
+      setProfile(profile)
+    }
+  }
+
+  useEffect(() => {
+    const getSession = async () => {
+      try {
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession()
+
+        if (error) {
+          console.error("Error getting session:", error)
+          setLoading(false)
+          return
+        }
+
+        setUser(session?.user ?? null)
+
+        if (session?.user) {
+          const profile = await fetchProfile(session.user.id)
+          setProfile(profile)
+        }
+
+        setLoading(false)
+      } catch (error) {
+        console.error("Error in getSession:", error)
+        setLoading(false)
+      }
     }
 
     getSession()
@@ -44,11 +81,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event, session?.user?.email)
+
       setUser(session?.user ?? null)
 
       if (session?.user) {
-        const { data: profile } = await supabase.from("profiles").select("*").eq("id", session.user.id).single()
-
+        const profile = await fetchProfile(session.user.id)
         setProfile(profile)
       } else {
         setProfile(null)
@@ -61,10 +99,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [supabase])
 
   const signOut = async () => {
-    await supabase.auth.signOut()
+    try {
+      setLoading(true)
+      const { error } = await supabase.auth.signOut()
+      if (error) {
+        console.error("Error signing out:", error)
+      }
+
+      // Clear local state
+      setUser(null)
+      setProfile(null)
+
+      // Redirect to sign in page
+      window.location.href = "/auth/sign-in"
+    } catch (error) {
+      console.error("Error in signOut:", error)
+    } finally {
+      setLoading(false)
+    }
   }
 
-  return <AuthContext.Provider value={{ user, profile, loading, signOut }}>{children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider value={{ user, profile, loading, signOut, refreshProfile }}>{children}</AuthContext.Provider>
+  )
 }
 
 export function useAuth() {
